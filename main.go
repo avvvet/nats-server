@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/nats-io/nats.go"
 )
@@ -23,4 +25,11 @@ func main() {
 
 	// Close the NATS connection when done
 	defer nc.Close()
+
+	sub, _ := nc.SubscribeSync("media.*")
+
+	nc.Publish("media.video", []byte("video track 001"))
+
+	msg, _ := sub.NextMsg(time.Millisecond * 10)
+	fmt.Printf("msg data: %q on subject %q\n", string(msg.Data), msg.Subject)
 }
