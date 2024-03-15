@@ -26,10 +26,28 @@ func main() {
 	// Close the NATS connection when done
 	defer nc.Close()
 
+	//subscribe to topic
 	sub, _ := nc.SubscribeSync("media.*")
 
+	//publish to topic
 	nc.Publish("media.video", []byte("video track 001"))
 
+	//consume the message
 	msg, _ := sub.NextMsg(time.Millisecond * 10)
 	fmt.Printf("msg data: %q on subject %q\n", string(msg.Data), msg.Subject)
+
+	// request reply
+
+	natsub, _ := nc.Subscribe("greet.*", func(msg *nats.Msg) {
+		name := msg.Subject[6:]
+		fmt.Println("from request ", string(msg.Data))
+		msg.Respond([]byte("hello, " + name))
+
+	})
+
+	rep, _ := nc.Request("greet.awet", []byte("hellow from request"), time.Second)
+	fmt.Println(string(rep.Data))
+
+	natsub.Unsubscribe()
+
 }

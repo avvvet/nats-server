@@ -1,8 +1,28 @@
 version: '3.8'
 
 services:
-  nats-server:
+
+  nats-server-1:
     image: nats:latest
     ports:
       - "4222:4222"
+    networks: 
+      - natsnet
 
+  # nats-server-2:
+  #   image: nats:latest
+  #   ports:
+  #     - "4225:4222"
+  #   networks: 
+  #     - natsnet
+
+  # nats-server-3:
+  #   image: nats:latest
+  #   ports:
+  #     - "4226:4222"
+  #   networks: 
+  #     - natsnet
+
+networks:
+  natsnet:
+    name: natsnet
